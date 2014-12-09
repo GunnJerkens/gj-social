@@ -35,7 +35,7 @@ class gjSocial {
    *
    * @return object
    */
-  public function displaySocial($network, $count = 10, $minutes = 60) {
+  public function display($network, $count = 10, $minutes = 60) {
     $this->cacheSocialData($network, $count, $minutes);
 
     $data = [];
