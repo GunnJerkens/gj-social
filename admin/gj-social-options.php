@@ -31,9 +31,7 @@ if(isset($_POST['gj_social_settings'])) {
   }
 } else {
   $settings = json_decode(get_option('gj_social_settings'));
-}
-
-var_dump($settings); ?>
+} ?>
 
 <style>
 table {

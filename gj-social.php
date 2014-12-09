@@ -52,7 +52,7 @@ class gjSocial {
    * @return void
    */
   private function getSettings() {
-    $this->settings = get_option('gj_social_settings');
+    $this->settings = json_decode(get_option('gj_social_settings'));
   }
 
   /**
@@ -79,10 +79,10 @@ class gjSocial {
    *
    * @return void
    */
-  private function cacheSocialData($sourceTime, $count, $minutes = 60) {
+  private function cacheSocialData($network, $count, $minutes = 60) {
     $currentTime = time(); 
     $expireTime  = $minutes * 60;
-    $sourceTime  = get_option('gj_social_'.$source.'_timestamp');
+    $sourceTime  = get_option('gj_social_'.$network.'_timestamp');
     $data        = array();
 
     if($sourceTime && ($currentTime - $expireTime < $sourceTime)) {
@@ -90,7 +90,7 @@ class gjSocial {
       $content = unserialize(get_option('gj_social'.$sourceTime));
 
     } else {
-      switch($sourceTime) {
+      switch($network) {
         case('twitter'):
           $content = $this->retrieveTwitter($count);
           break;
@@ -104,10 +104,9 @@ class gjSocial {
           $content = $this->retrieveTumblr($count);
           break;
       }
-      update_option('gj_social_'.$sourceTime.'_timestamp', time());
+      update_option('gj_social_'.$network.'_timestamp', time());
     }
-
-    update_option('gj_social_'.$sourceTime, serialize($content));
+    update_option('gj_social_'.$network, serialize($content));
 
     $this->content['response'] = $content;
     $this->content['time']     = $currentTime;
@@ -167,12 +166,12 @@ class gjSocial {
       'consumer_key'              => $this->settings->twitter->consumer_key,
       'consumer_secret'           => $this->settings->twitter->consumer_secret,
     ];
-    $username = get_option('gj_social_twitter_username');
-    $url = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name='.$username.'&count='.$count;
+    $baseurl       = 'https://api.twitter.com/1.1/statuses/user_timeline.json';
+    $getfield      = '?screen_name='.$this->settings->twitter->username.'&count='.$count;
     $requestMethod = 'GET';
 
     $twitter = new TwitterAPIExchange($settings);
-    $tweets  = $twitter->setGetfield($getfield)->buildOauth($url, $requestMethod)->performRequest();
+    $tweets  = $twitter->setGetfield($getfield)->buildOauth($baseurl, $requestMethod)->performRequest();
 
     return $tweets;
   }
@@ -187,7 +186,7 @@ class gjSocial {
   private function retrieveTumblr($count) {
     $api_key  = $this->settings->tumblr->api_key;
     $hostname = $this->settings->tumblr->hostname;
-    $posts    = fetchData('http://api.tumblr.com/v2/blog/'.$hostname.'/posts?api_key='.$api_key.'&limit='.$count);
+    $posts    = $this->fetchData('http://api.tumblr.com/v2/blog/'.$hostname.'/posts?api_key='.$api_key.'&limit='.$count);
 
     return $posts;
   }
@@ -200,7 +199,7 @@ class gjSocial {
   private function retrieveFacebook() {
     $token = $this->settings->facebook->token;
     $page  = $this->settings->facebook->page_id;
-    $posts = fetchData('https://graph.facebook.com/'.$page.'/feed?access_token='.$token);
+    $posts = $this->fetchData('https://graph.facebook.com/'.$page.'/feed?access_token='.$token);
 
     return $posts;
   }
@@ -214,7 +213,7 @@ class gjSocial {
    */
   private function retrieveInstagram($count) {
     $token = $this->settings->instagram->token;
-    $posts = fetchData('https://api.instagram.com/v1/users/self/feed?access_token='.$token.'&count='.$count);
+    $posts = $this->fetchData('https://api.instagram.com/v1/users/self/feed?access_token='.$token.'&count='.$count);
 
     return $posts;
   }
