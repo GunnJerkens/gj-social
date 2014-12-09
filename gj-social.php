@@ -25,7 +25,26 @@ class gjSocial {
    * @return void
    */
   function __construct() {
+    add_action('admin_menu', array(&$this,'gj_social_admin_actions'));
     update_option("gj_social_version", "0.1.0");
+  }
+
+  /**
+   * Load the options page to the admin
+   *
+   * @return void
+   */
+  function gj_social_admin_actions() {
+    add_options_page( 'GJ Social', 'GJ Social', 'administrator', 'gj_social', array(&$this,'gj_social_admin_options'));
+  }
+
+  /**
+   * Instantiate the options panel
+   * 
+   * @return void
+   */
+  function gj_social_admin_options() {
+    include('admin/gj-social-options.php');
   }
 
   /**
@@ -78,9 +97,9 @@ class gjSocial {
           $content = $this->retrieveTumblr($count);
           break;
       }
+      update_option('gj_social_'.$sourceTime.'_timestamp', time());
     }
 
-    update_option('gj_social_'.$sourceTime.'_timestamp', time());
     update_option('gj_social_'.$sourceTime, serialize($content));
 
     $this->content['response'] = $content;
