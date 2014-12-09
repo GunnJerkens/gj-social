@@ -67,7 +67,7 @@ class gjSocial {
 
     $data = [];
     $data['time'] = date('D g:i a', $this->content['time']);
-    $data['response'] = (object) json_decode($this->content['response'], true);
+    $data['response'] = (object) json_decode($this->content['response']);
 
     return $data;
   }
@@ -86,9 +86,7 @@ class gjSocial {
     $data        = array();
 
     if($sourceTime && ($currentTime - $expireTime < $sourceTime)) {
-
-      $content = unserialize(get_option('gj_social'.$sourceTime));
-
+      $content = unserialize(get_option('gj_social_'.$network));
     } else {
       switch($network) {
         case('twitter'):
@@ -105,8 +103,8 @@ class gjSocial {
           break;
       }
       update_option('gj_social_'.$network.'_timestamp', time());
+      update_option('gj_social_'.$network, serialize($content));
     }
-    update_option('gj_social_'.$network, serialize($content));
 
     $this->content['response'] = $content;
     $this->content['time']     = $currentTime;
