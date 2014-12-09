@@ -1,57 +1,104 @@
 <?php
 
 if(isset($_POST['gj_social_settings'])) {
-  if(1 === check_admin_referer('gj-maps-settings')) {
+  if(1 === check_admin_referer('gj-social-settings')) {
 
-    $twitter_username = $_POST['gj_social_twitter_username'];
-    update_option('gj_social_twitter_username', $twitter_username);
-    $twitter_token = $_POST['gj_social_twitter_token'];
-    update_option('gj_social_twitter_token', $twitter_token);
-    $twitter_token_secret = $_POST['gj_social_twitter_token_secret'];
-    update_option('gj_social_twitter_token', $twitter_token_secret);
-    $twitter_consumer_key = $_POST['gj_social_twitter_consumer_key'];
-    update_option('gj_social_twitter_consumer_key', $twitter_consumer_key);
-    $twitter_consumer_secret = $_POST['gj_social_twitter_consumer_secret'];
-    update_option('gj_social_twitter_consumer_secret', $twitter_consumer_secret);
+    $settings = (object) [
+      'twitter'   => (object) [
+        'username'        => $_POST['gj_social_twitter_username'],
+        'token'           => $_POST['gj_social_twitter_token'],
+        'token_secret'    => $_POST['gj_social_twitter_token_secret'],
+        'consumer_key'    => $_POST['gj_social_twitter_consumer_key'],
+        'consumer_secret' => $_POST['gj_social_twitter_consumer_secret'],
+      ],
+      'facebook'  => (object) [
+        'token'           => $_POST['gj_social_facebook_token'],
+        'page_id'         => $_POST['gj_social_facebook_page_id'],
+      ],
+      'instagram' => (object) [
+        'token'           => $_POST['gj_social_instagram_token'],
+      ],
+      'tumblr'    => (object) [
+        'api_key'         => $_POST['gj_social_tumblr_api_key'],
+        'hostname'        => $_POST['gj_social_tumblr_hostname'],
+      ],
+    ];
 
-    echo '<div id="message" class="updated"><p>'.$response['message'].'</p></div>';
+    $settingsEncoded = json_encode($settings);
+    update_option('gj_social_settings', $settingsEncoded);
+
+    echo '<div id="message" class="updated"><p>Settings updated.</p></div>';
   }
 } else {
+  $settings = json_decode(get_option('gj_social_settings'));
+}
 
-  $twitter_username = get_option('gj_social_twitter_username');
-  $twitter_token = get_option('gj_social_twitter_token');
-  $twitter_token_secret = get_option('gj_social_twitter_token_secret');
-  $twitter_consumer_key = get_option('gj_social_twitter_consumer_key');
-  $twitter_consumer_secret = get_option('gj_social_twitter_consumer_secret');
+var_dump($settings); ?>
 
-} ?>
+<style>
+table {
+  width: 60%;
+}
+input.gj-input {
+  width: 100%;
+}
+</style>
 
 <table class="gj-social-settings">
-  <tr>
-    <td><h3>Twitter</h3></td>
-  </tr>
-  <form name="gj_social_settings" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
+  <form name="gj_social_settings" method="post">
     <input type="hidden" name="gj_social_settings" value="1">
     <?php wp_nonce_field('gj-social-settings'); ?>
     <tr>
+      <td><h3>Twitter</h3></td>
+    </tr>
+    <tr>
       <td><p>Username: </p></td>
-      <td><input name="gj_social_twitter_username" value="<?php echo $twitter_username != "" ? $twitter_username : ''; ?>"></td>
+      <td><input class="gj-input" name="gj_social_twitter_username" value="<?php echo $settings && $settings->twitter->username != "" ? $settings->twitter->username : ''; ?>"></td>
     </tr>
     <tr>
       <td><p>Token: </p></td>
-      <td><input name="gj_social_twitter_token" value="<?php echo $twitter_token != "" ? $twitter_token : ''; ?>"></td>
+      <td><input class="gj-input" name="gj_social_twitter_token" value="<?php echo $settings && $settings->twitter->token != "" ? $settings->twitter->token : ''; ?>"></td>
     </tr>
     <tr>
       <td><p>Token Secret: </p></td>
-      <td><input name="gj_social_twitter_token_secret" value="<?php echo $twitter_token_secret != "" ? $twitter_token_secret : ''; ?>"></td>
+      <td><input class="gj-input" name="gj_social_twitter_token_secret" value="<?php echo $settings && $settings->twitter->token_secret != "" ? $settings->twitter->token_secret : ''; ?>"></td>
     </tr>
     <tr>
       <td><p>Consumer Key: </p></td>
-      <td><input name="gj_social_twitter_consumer_key" value="<?php echo $twitter_consumer_key != "" ? $twitter_consumer_key : ''; ?>"></td>
+      <td><input class="gj-input" name="gj_social_twitter_consumer_key" value="<?php echo $settings && $settings->twitter->consumer_key != "" ? $settings->twitter->consumer_key : ''; ?>"></td>
     </tr>
     <tr>
       <td><p>Consumer Secret: </p></td>
-      <td><input name="gj_social_twitter_consumer_secret" value="<?php echo $twitter_consumer_secret != "" ? $twitter_consumer_secret : ''; ?>"></td>
+      <td><input class="gj-input" name="gj_social_twitter_consumer_secret" value="<?php echo $settings && $settings->twitter->consumer_secret != "" ? $settings->twitter->consumer_secret : ''; ?>"></td>
+    </tr>
+    <tr>
+      <td><h3>Facebook</h3></td>
+    </tr>
+    <tr>
+      <td><p>Token: </p></td>
+      <td><input class="gj-input" name="gj_social_facebook_token" value="<?php echo $settings && $settings->facebook->token != "" ? $settings->facebook->token : ''; ?>"></td>
+    </tr>
+    <tr>
+      <td><p>Page ID: </p></td>
+      <td><input class="gj-input" name="gj_social_facebook_page_id" value="<?php echo $settings && $settings->facebook->page_id !="" ? $settings->facebook->page_id : ''; ?>"></td>
+    </tr>
+    <tr>
+      <td><h3>Instagram</h3></td>
+    </tr>
+    <tr>
+      <td><p>Token: </p></td>
+      <td><input class="gj-input" name="gj_social_instagram_token" value="<?php echo $settings && $settings->instagram->token !="" ? $settings->instagram->token : ''; ?>"></td>
+    </tr>
+    <tr>
+      <td><h3>Tumblr</h3></td>
+    </tr>
+    <tr>
+      <td><p>Hostname: </p></td>
+      <td><input class="gj-input" name="gj_social_tumblr_hostname" value="<?php echo $settings && $settings->tumblr->hostname != "" ? $settings->tumblr->hostname : ''; ?>"></td>
+    </tr>
+    <tr>
+      <td><p>API Key: </p></td>
+      <td><input class="gj-input" name="gj_social_tumblr_api_key" value="<?php echo $settings && $settings->tumblr->api_key != "" ? $settings->tumblr->api_key : ''; ?>"></td>
     </tr>
     <tr colspan="1">
       <td><button class="btn button" type="submit">Update Settings</button></td>
