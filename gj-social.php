@@ -8,16 +8,14 @@
  * Author URI: http://gunnjerkens.com
  * License: MIT
  */
-
 class gjSocial {
 
   /**
-   * Class variables
+   * Class vars
    *
    * @var array
    */
-
-  protected $content;
+  protected $content, $settings;
 
   /**
    * Default class constructor
@@ -27,6 +25,7 @@ class gjSocial {
   function __construct() {
     add_action('admin_menu', array(&$this,'gj_social_admin_actions'));
     update_option("gj_social_version", "0.1.0");
+    $this->getSettings();
   }
 
   /**
@@ -45,6 +44,15 @@ class gjSocial {
    */
   function gj_social_admin_options() {
     include('admin/gj-social-options.php');
+  }
+
+  /**
+   * Settings getter
+   *
+   * @return void
+   */
+  private function getSettings() {
+    $this->settings = get_option('gj_social_settings');
   }
 
   /**
@@ -71,7 +79,6 @@ class gjSocial {
    *
    * @return void
    */
-
   private function cacheSocialData($sourceTime, $count, $minutes = 60) {
     $currentTime = time(); 
     $expireTime  = $minutes * 60;
@@ -155,19 +162,61 @@ class gjSocial {
     require_once(plugin_dir_path(__FILE__).'/libs/twitter-api-php/TwitterAPIExchange.php');
 
     $settings = [
-      'oauth_access_token'        => get_option('gj_social_twitter_token'),
-      'oauth_access_token_secret' => get_option('gj_social_twitter_token_secret'),
-      'consumer_key'              => get_option('gj_social_twitter_consumer_key'),
-      'consumer_secret'           => get_option('gj_social_twitter_consumer_secret'),
+      'oauth_access_token'        => $this->settings->twitter->token,
+      'oauth_access_token_secret' => $this->settings->twitter->token_secret,
+      'consumer_key'              => $this->settings->twitter->consumer_key,
+      'consumer_secret'           => $this->settings->twitter->consumer_secret,
     ];
     $username = get_option('gj_social_twitter_username');
     $url = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name='.$username.'&count='.$count;
     $requestMethod = 'GET';
 
     $twitter = new TwitterAPIExchange($settings);
-    $tweets= $twitter->setGetfield($getfield)->buildOauth($url, $requestMethod)->performRequest();
+    $tweets  = $twitter->setGetfield($getfield)->buildOauth($url, $requestMethod)->performRequest();
 
     return $tweets;
+  }
+
+  /**
+   * Retrieves the user timeline from Tumblr
+   *
+   * @param int
+   *
+   * @return json
+   */
+  private function retrieveTumblr($count) {
+    $api_key  = $this->settings->tumblr->api_key;
+    $hostname = $this->settings->tumblr->hostname;
+    $posts    = fetchData('http://api.tumblr.com/v2/blog/'.$hostname.'/posts?api_key='.$api_key.'&limit='.$count);
+
+    return $posts;
+  }
+
+  /**
+   * Retrieves the page timeline from Facebook
+   *
+   * @return json
+   */
+  private function retrieveFacebook() {
+    $token = $this->settings->facebook->token;
+    $page  = $this->settings->facebook->page_id;
+    $posts = fetchData('https://graph.facebook.com/'.$page.'/feed?access_token='.$token);
+
+    return $posts;
+  }
+
+  /**
+   * Retrieves the self timeline from Instagram
+   *
+   * @param int
+   *
+   * @return json
+   */
+  private function retrieveInstagram($count) {
+    $token = $this->settings->instagram->token;
+    $posts = fetchData('https://api.instagram.com/v1/users/self/feed?access_token='.$token.'&count='.$count);
+
+    return $posts;
   }
 
 }
