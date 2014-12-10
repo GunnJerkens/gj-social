@@ -210,8 +210,9 @@ class gjSocial {
    * @return json
    */
   private function retrieveInstagram($count) {
-    $token = $this->settings->instagram->token;
-    $posts = $this->fetchData('https://api.instagram.com/v1/users/self/feed?access_token='.$token.'&count='.$count);
+    $token  = $this->settings->instagram->token;
+    $userID = $this->settings->instagram->user_id;
+    $posts  = $this->fetchData('https://api.instagram.com/v1/users/'.$user_id.'/media/recent?access_token='.$token.'&count='.$count);
 
     return $posts;
   }

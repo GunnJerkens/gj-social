@@ -17,6 +17,7 @@ if(isset($_POST['gj_social_settings'])) {
       ],
       'instagram' => (object) [
         'token'           => $_POST['gj_social_instagram_token'],
+        'user_id'         => $_POST['gj_social_instagram_user_id'],
       ],
       'tumblr'    => (object) [
         'api_key'         => $_POST['gj_social_tumblr_api_key'],
@@ -78,14 +79,18 @@ input.gj-input {
     </tr>
     <tr>
       <td><p>Page ID: </p></td>
-      <td><input class="gj-input" name="gj_social_facebook_page_id" value="<?php echo $settings && $settings->facebook->page_id !="" ? $settings->facebook->page_id : ''; ?>"></td>
+      <td><input class="gj-input" name="gj_social_facebook_page_id" value="<?php echo $settings && $settings->facebook->page_id != "" ? $settings->facebook->page_id : ''; ?>"></td>
     </tr>
     <tr>
       <td><h3>Instagram</h3></td>
     </tr>
     <tr>
+      <td><p>User ID: </p></td>
+      <td><input class="gj-input" name="gj_social_instagram_user_id" value="<?php echo $settings && $settings->instagram->user_id != "" ? $settings->instagram->user_id : ''; ?>"></td>
+    </tr>
+    <tr>
       <td><p>Token: </p></td>
-      <td><input class="gj-input" name="gj_social_instagram_token" value="<?php echo $settings && $settings->instagram->token !="" ? $settings->instagram->token : ''; ?>"></td>
+      <td><input class="gj-input" name="gj_social_instagram_token" value="<?php echo $settings && $settings->instagram->token != "" ? $settings->instagram->token : ''; ?>"></td>
     </tr>
     <tr>
       <td><h3>Tumblr</h3></td>
