@@ -22,8 +22,8 @@ $gjSocial->display($network, $count, $time);
 Each social site requires different ways to access their API. Here is my feeble attempt at including a couple guides to help get the keys needed to make this work.
 
 #### instagram
-[Access Token Creation](http://jelled.com/instagram/access-token)
-[User ID Lookup](http://jelled.com/instagram/lookup-user-id)
+[Access Token Creation](http://jelled.com/instagram/access-token)  
+[User ID Lookup](http://jelled.com/instagram/lookup-user-id)  
 
 ## dependencies
 
