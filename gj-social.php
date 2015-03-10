@@ -85,7 +85,7 @@ class gjSocial {
     $sourceTime  = get_option('gj_social_'.$network.'_timestamp');
     $data        = array();
 
-    if($sourceTime && ($currentTime - $expireTime < $sourceTime)) {
+    if($sourceTime && ($currentTime - $sourceTime < $expireTime)) {
       $content = unserialize(get_option('gj_social_'.$network));
     } else {
       switch($network) {
