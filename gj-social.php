@@ -96,7 +96,7 @@ class gjSocial {
           $content = $this->retrieveInstagram($count);
           break;
         case('facebook'):
-          $content = $this->retrieveFacebook();
+          $content = $this->retrieveFacebook($count);
           break;
         case('tumblr'):
           $content = $this->retrieveTumblr($count);
@@ -194,10 +194,10 @@ class gjSocial {
    *
    * @return json
    */
-  private function retrieveFacebook() {
+  private function retrieveFacebook($count) {
     $token = $this->settings->facebook->token;
     $page  = $this->settings->facebook->page_id;
-    $posts = $this->fetchData('https://graph.facebook.com/'.$page.'/feed?access_token='.$token);
+    $posts = $this->fetchData('https://graph.facebook.com/'.$page.'/feed?access_token='.$token.'&limit='.$count);
 
     return $posts;
   }
