@@ -62,8 +62,8 @@ class gjSocial {
    *
    * @return object
    */
-  public function display($network, $count = 10, $minutes = 60) {
-    $this->cacheSocialData($network, $count, $minutes);
+  public function display($network, $count = 10, $minutes = 60, $fields = "") {
+    $this->cacheSocialData($network, $count, $minutes, $fields);
 
     $data = [];
     $data['time'] = date('D g:i a', $this->content['time']);
@@ -79,7 +79,7 @@ class gjSocial {
    *
    * @return void
    */
-  private function cacheSocialData($network, $count, $minutes = 60) {
+  private function cacheSocialData($network, $count, $minutes = 60, $fields = "") {
     $currentTime = time(); 
     $expireTime  = $minutes * 60;
     $sourceTime  = get_option('gj_social_'.$network.'_timestamp');
@@ -96,7 +96,7 @@ class gjSocial {
           $content = $this->retrieveInstagram($count);
           break;
         case('facebook'):
-          $content = $this->retrieveFacebook($count);
+          $content = $this->retrieveFacebook($count, $fields);
           break;
         case('tumblr'):
           $content = $this->retrieveTumblr($count);
@@ -194,10 +194,13 @@ class gjSocial {
    *
    * @return json
    */
-  private function retrieveFacebook($count) {
+  private function retrieveFacebook($count, $fields = "") {
     $token = $this->settings->facebook->token;
     $page  = $this->settings->facebook->page_id;
-    $posts = $this->fetchData('https://graph.facebook.com/'.$page.'/posts?access_token='.$token.'&limit='.$count);
+    if($fields !== "" && is_array($fields)) {
+      $fields = "&fields=".(implode(",", $fields));
+    }
+    $posts = $this->fetchData('https://graph.facebook.com/'.$page.'/posts?access_token='.$token.'&limit='.$count.$fields);
 
     return $posts;
   }
@@ -217,5 +220,24 @@ class gjSocial {
     return $posts;
   }
 
+  /**
+   * Retrieves facebook images
+   *
+   * @param $object_id string
+   *
+   * @return object || false
+   */
+  public function getFacebookImages($object_id) {
+    $token   = $this->settings->facebook->token;
+    $json    = file_get_contents('https://graph.facebook.com/'.$object_id.'?access_token='.$token.'&fields=images');
+    $img_obj = json_decode($json);
+    if($img_obj !== null) {
+      return $img_obj->images[0];
+    } else {
+      return false;
+    }
+  }
+
 }
+
 new gjSocial();
