@@ -197,7 +197,7 @@ class gjSocial {
   private function retrieveFacebook($count) {
     $token = $this->settings->facebook->token;
     $page  = $this->settings->facebook->page_id;
-    $posts = $this->fetchData('https://graph.facebook.com/'.$page.'/feed?access_token='.$token.'&limit='.$count);
+    $posts = $this->fetchData('https://graph.facebook.com/'.$page.'/posts?access_token='.$token.'&limit='.$count);
 
     return $posts;
   }
