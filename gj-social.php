@@ -200,7 +200,7 @@ class gjSocial {
     if($fields !== "" && is_array($fields)) {
       $fields = "&fields=".(implode(",", $fields));
     }
-    $posts = $this->fetchData('https://graph.facebook.com/'.$page.'/posts?access_token='.$token.'&limit='.$count.$fields);
+    $posts = file_get_contents('https://graph.facebook.com/'.$page.'/posts?access_token='.$token.'&limit='.$count.$fields);
 
     return $posts;
   }
