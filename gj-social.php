@@ -39,7 +39,7 @@ class gjSocial {
 
   /**
    * Instantiate the options panel
-   * 
+   *
    * @return void
    */
   function gj_social_admin_options() {
@@ -67,7 +67,11 @@ class gjSocial {
 
     $data = [];
     $data['time'] = date('D g:i a', $this->content['time']);
-    $data['response'] = (object) json_decode($this->content['response']);
+    if($network === 'facebook') {
+      $data['response'] = $this->content['response'];
+    } else {
+      $data['response'] = (object) json_decode($this->content['response']);
+    }
 
     return $data;
   }
@@ -80,7 +84,7 @@ class gjSocial {
    * @return void
    */
   private function cacheSocialData($network, $count, $minutes = 60, $fields = "") {
-    $currentTime = time(); 
+    $currentTime = time();
     $expireTime  = $minutes * 60;
     $sourceTime  = get_option('gj_social_'.$network.'_timestamp');
     $data        = array();
@@ -197,12 +201,33 @@ class gjSocial {
   private function retrieveFacebook($count, $fields = "") {
     $token = $this->settings->facebook->token;
     $page  = $this->settings->facebook->page_id;
-    if($fields !== "" && is_array($fields)) {
-      $fields = "&fields=".(implode(",", $fields));
-    }
-    $posts = file_get_contents('https://graph.facebook.com/'.$page.'/posts?access_token='.$token.'&limit='.$count.$fields);
+    $app_id = $this->settings->facebook->app_id;
+    $app_secret = $this->settings->facebook->app_secret;
 
-    return $posts;
+    require_once(plugin_dir_path(__FILE__).'/libs/php-graph-sdk-5/src/Facebook/autoload.php');
+
+    $fb = new \Facebook\Facebook([
+      'app_id' => $app_id,
+      'app_secret' => $app_secret,
+      'default_graph_version' => 'v2.10',
+      'default_access_token' => $token
+    ]);
+
+    try {
+      // Returns a `Facebook\FacebookResponse` object
+      if($fields !== "" && is_array($fields)) {
+        $fields = "?fields=".(implode(",", $fields));
+      }
+      $response = $fb->get(
+        '/'.$page.'/feed'.$fields.'&limit='.$count
+      );
+    } catch(Facebook\Exceptions\FacebookResponseException $e) {
+      echo 'Graph returned an error: ' . $e->getMessage();
+      exit;
+    } catch(Facebook\Exceptions\FacebookSDKException $e) {
+      echo 'Facebook SDK returned an error: ' . $e->getMessage();
+    }
+    return $response->getDecodedBody();;
   }
 
   /**
@@ -218,24 +243,6 @@ class gjSocial {
     $posts  = $this->fetchData('https://api.instagram.com/v1/users/'.$userID.'/media/recent?access_token='.$token.'&count='.$count);
 
     return $posts;
-  }
-
-  /**
-   * Retrieves facebook images
-   *
-   * @param $object_id string
-   *
-   * @return object || false
-   */
-  public function getFacebookImages($object_id) {
-    $token   = $this->settings->facebook->token;
-    $json    = file_get_contents('https://graph.facebook.com/'.$object_id.'?access_token='.$token.'&fields=images');
-    $img_obj = json_decode($json);
-    if($img_obj !== null) {
-      return $img_obj->images[0];
-    } else {
-      return false;
-    }
   }
 
 }

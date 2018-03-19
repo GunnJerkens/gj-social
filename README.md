@@ -8,7 +8,7 @@ For the networks you want to access data from just fill in the required fields a
 
 ```
 $gjSocial = new gjSocial();
-$gjSocial->display($network, $count, $time);
+$gjSocial->display($network, $count, $time, $fields);
 ```
 
 | variable | expected (default) | options                              |
