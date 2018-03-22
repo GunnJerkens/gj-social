@@ -25,7 +25,7 @@ Each social site requires different ways to access their API. Here is my feeble 
 ### Facebook
 [Facebooks Graph API](https://developers.facebook.com/docs/graph-api)
 
-#### Instagram
+### Instagram
 This also uses the Graph API.  
 [Getting Started](https://developers.facebook.com/docs/instagram-api/getting-started/)  
 
