@@ -16,7 +16,7 @@ $gjSocial->display($network, $count, $time, $fields);
 | $network | string             | twitter, instagram, facebook, tumblr          |
 | $count   | int (10)           |                                               |
 | $time    | int (60)           |                                               |
-| $fields  | array (string)     | requested fields, facebook and instagram only |
+| $fields  | array (string)     | requested fields (facebook and instagram only)|
 
 ### tips
 
