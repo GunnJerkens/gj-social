@@ -31,6 +31,7 @@ This also uses the Graph API.
 
 ## dependencies
 
+[Facebook SDK for PHP](https://github.com/facebook/php-graph-sdk)
 [Twitter PHP API](https://github.com/J7mbo/twitter-api-php)
 
 ## requirements
