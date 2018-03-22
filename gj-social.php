@@ -67,7 +67,7 @@ class gjSocial {
 
     $data = [];
     $data['time'] = date('D g:i a', $this->content['time']);
-    if($network === 'facebook') {
+    if($network === 'facebook' || $network === 'instagram') {
       $data['response'] = $this->content['response'];
     } else {
       $data['response'] = (object) json_decode($this->content['response']);
@@ -97,7 +97,7 @@ class gjSocial {
           $content = $this->retrieveTwitter($count);
           break;
         case('instagram'):
-          $content = $this->retrieveInstagram($count);
+          $content = $this->retrieveInstagram($count, $fields);
           break;
         case('facebook'):
           $content = $this->retrieveFacebook($count, $fields);
@@ -209,7 +209,7 @@ class gjSocial {
     $fb = new \Facebook\Facebook([
       'app_id' => $app_id,
       'app_secret' => $app_secret,
-      'default_graph_version' => 'v2.10',
+      'default_graph_version' => 'v2.12',
       'default_access_token' => $token
     ]);
 
@@ -227,7 +227,7 @@ class gjSocial {
     } catch(Facebook\Exceptions\FacebookSDKException $e) {
       echo 'Facebook SDK returned an error: ' . $e->getMessage();
     }
-    return $response->getDecodedBody();;
+    return $response->getDecodedBody();
   }
 
   /**
@@ -237,12 +237,40 @@ class gjSocial {
    *
    * @return json
    */
-  private function retrieveInstagram($count) {
-    $token  = $this->settings->instagram->token;
-    $userID = $this->settings->instagram->user_id;
-    $posts  = $this->fetchData('https://api.instagram.com/v1/users/'.$userID.'/media/recent?access_token='.$token.'&count='.$count);
+  private function retrieveInstagram($count, $fields = "") {
+    $biz_account_id = $this->settings->instagram->biz_account_id;
 
-    return $posts;
+    $token = $this->settings->facebook->token;
+    $app_id = $this->settings->facebook->app_id;
+    $app_secret = $this->settings->facebook->app_secret;
+
+    require_once(plugin_dir_path(__FILE__).'/libs/php-graph-sdk-5/src/Facebook/autoload.php');
+
+    $fb = new \Facebook\Facebook([
+      'app_id' => $app_id,
+      'app_secret' => $app_secret,
+      'default_graph_version' => 'v2.12',
+      'default_access_token' => $token
+    ]);
+
+    try {
+      // Returns a `Facebook\FacebookResponse` object
+
+      if($fields !== "" && is_array($fields)) {
+        $fields = "?fields=".(implode(",", $fields));
+      }
+
+      $response = $fb->get(
+        '/'.$biz_account_id.'/media'.$fields.'&limit='.$count
+      );
+    } catch(Facebook\Exceptions\FacebookResponseException $e) {
+      echo 'Graph returned an error: ' . $e->getMessage();
+      exit;
+    } catch(Facebook\Exceptions\FacebookSDKException $e) {
+      echo 'Facebook SDK returned an error: ' . $e->getMessage();
+    }
+
+    return $response->getDecodedBody();
   }
 
 }

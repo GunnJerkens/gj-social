@@ -11,20 +11,23 @@ $gjSocial = new gjSocial();
 $gjSocial->display($network, $count, $time, $fields);
 ```
 
-| variable | expected (default) | options                              |
-| -------- | ------------------ | -------------------------------------|
-| $network | string             | twitter, instagram, facebook, tumblr |
-| $count   | int (10)           |                                      |
-| $time    | int (60)           |                                      |
-| $fields  | array (string)     | requested fields, facebook only      |
+| variable | expected (default) | options                                       |
+| -------- | ------------------ | ----------------------------------------------|
+| $network | string             | twitter, instagram, facebook, tumblr          |
+| $count   | int (10)           |                                               |
+| $time    | int (60)           |                                               |
+| $fields  | array (string)     | requested fields, facebook and instagram only |
 
 ### tips
 
 Each social site requires different ways to access their API. Here is my feeble attempt at including a couple guides to help get the keys needed to make this work.
 
-#### instagram
-[Access Token Creation](http://jelled.com/instagram/access-token)  
-[User ID Lookup](http://jelled.com/instagram/lookup-user-id)  
+### Facebook
+[Facebooks Graph API](https://developers.facebook.com/docs/graph-api)
+
+#### Instagram
+This also uses the Graph API.  
+[Getting Started](https://developers.facebook.com/docs/instagram-api/getting-started/)  
 
 ## dependencies
 
