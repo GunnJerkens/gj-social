@@ -18,7 +18,8 @@ if(isset($_POST['gj_social_settings'])) {
         'page_id'         => $_POST['gj_social_facebook_page_id'],
       ],
       'instagram' => (object) [
-        'biz_account_id' => $_POST['gj_social_instagram_biz_account_id'],
+        'token'           => $_POST['gj_social_instagram_token'],
+        'user_id'         => $_POST['gj_social_instagram_user_id'],
       ],
       'tumblr'    => (object) [
         'api_key'         => $_POST['gj_social_tumblr_api_key'],
@@ -91,11 +92,15 @@ input.gj-input {
       <td><input class="gj-input" name="gj_social_facebook_page_id" value="<?php echo $settings && $settings->facebook->page_id != "" ? $settings->facebook->page_id : ''; ?>"></td>
     </tr>
     <tr>
-      <td><h3>Instagram</h3><small style="max-width: 200px;display: block;">*Requires the Facebook App ID, App Secret and Long-Lived User Access Token fields to be filled out and your Instagram page to be a business account and connected to your Facebook account.</small></td>
+      <td><h3>Instagram</h3></td>
     </tr>
     <tr>
-      <td><p>Business Account ID: </p></td>
-      <td><input class="gj-input" name="gj_social_instagram_biz_account_id" value="<?php echo $settings && property_exists($settings->instagram, 'biz_account_id') && $settings->instagram->biz_account_id != "" ? $settings->instagram->biz_account_id : ''; ?>"></td>
+      <td><p>Token: </p></td>
+      <td><input class="gj-input" name="gj_social_instagram_token" value="<?php echo $settings && property_exists($settings->instagram, 'token') && $settings->instagram->token != "" ? $settings->instagram->token : ''; ?>"></td>
+    </tr>
+    <tr>
+      <td><p>User ID: </p></td>
+      <td><input class="gj-input" name="gj_social_instagram_user_id" value="<?php echo $settings && property_exists($settings->instagram, 'user_id') && $settings->instagram->user_id != "" ? $settings->instagram->user_id : ''; ?>"></td>
     </tr>
     <tr>
       <td><h3>Tumblr</h3></td>
