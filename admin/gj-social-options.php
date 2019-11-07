@@ -83,7 +83,7 @@ input.gj-input {
       <td><input class="gj-input" name="gj_social_facebook_app_secret" value="<?php echo $settings && property_exists($settings->facebook, 'app_secret') && $settings->facebook->app_secret != "" ? $settings->facebook->app_secret : ''; ?>"></td>
     </tr>
     <tr>
-      <td><p>Long-Lived User Access Token</p></td>
+      <td><p>Long-Lived User Access Token: </p></td>
       <td><input class="gj-input" name="gj_social_facebook_token" value="<?php echo $settings && $settings->facebook->token != "" ? $settings->facebook->token : ''; ?>"></td>
     </tr>
     <tr>
