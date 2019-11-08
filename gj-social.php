@@ -67,11 +67,7 @@ class gjSocial {
 
     $data = [];
     $data['time'] = date('D g:i a', $this->content['time']);
-    if($network === 'facebook' || $network === 'instagram') {
-      $data['response'] = $this->content['response'];
-    } else {
-      $data['response'] = (object) json_decode($this->content['response']);
-    }
+    $data['response'] = (object) json_decode($this->content['response']);
 
     return $data;
   }
@@ -97,7 +93,7 @@ class gjSocial {
           $content = $this->retrieveTwitter($count);
           break;
         case('instagram'):
-          $content = $this->retrieveInstagram($count, $fields);
+          $content = $this->retrieveInstagram($count);
           break;
         case('facebook'):
           $content = $this->retrieveFacebook($count, $fields);
@@ -123,10 +119,14 @@ class gjSocial {
    */
   private function fetchData($url) {
     $ch = curl_init();
+
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+
     $result = curl_exec($ch);
+    if (curl_errno($ch)) {
+        return 'Error:' . curl_error($ch);
+    }
     curl_close($ch);
 
     return $result;
@@ -198,36 +198,12 @@ class gjSocial {
    *
    * @return json
    */
-  private function retrieveFacebook($count, $fields = "") {
+  private function retrieveFacebook($count, $fields) {
     $token = $this->settings->facebook->token;
     $page  = $this->settings->facebook->page_id;
-    $app_id = $this->settings->facebook->app_id;
-    $app_secret = $this->settings->facebook->app_secret;
-
-    require_once(plugin_dir_path(__FILE__).'/libs/php-graph-sdk-5/src/Facebook/autoload.php');
-
-    $fb = new \Facebook\Facebook([
-      'app_id' => $app_id,
-      'app_secret' => $app_secret,
-      'default_access_token' => $token
-    ]);
-
-    try {
-      // Returns a `Facebook\FacebookResponse` object
-      if($fields !== "" && is_array($fields)) {
-        $fields = "?fields=".(implode(",", $fields));
-      }
-      $response = $fb->get(
-        '/'.$page.'/feed'.$fields.'&limit='.$count
-      );
-    } catch(Facebook\Exceptions\FacebookResponseException $e) {
-      return 'Graph returned an error: ' . $e->getMessage();
-      exit;
-    } catch(Facebook\Exceptions\FacebookSDKException $e) {
-      return 'Facebook SDK returned an error: ' . $e->getMessage();
-      exit;
-    }
-    return $response->getDecodedBody();
+    $url   = "https://graph.facebook.com/$page/feed?fields=$fields&limit=$count&access_token=$token";
+    $posts = $this->fetchData($url);
+    return $posts;
   }
 
   /**

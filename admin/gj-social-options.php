@@ -12,8 +12,6 @@ if(isset($_POST['gj_social_settings'])) {
         'consumer_secret' => $_POST['gj_social_twitter_consumer_secret'],
       ],
       'facebook'  => (object) [
-        'app_id'          => $_POST['gj_social_facebook_app_id'],
-        'app_secret'      => $_POST['gj_social_facebook_app_secret'],
         'token'           => $_POST['gj_social_facebook_token'],
         'page_id'         => $_POST['gj_social_facebook_page_id'],
       ],
@@ -76,15 +74,7 @@ input.gj-input {
       <td><h3>Facebook</h3></td>
     </tr>
     <tr>
-      <td><p>App ID: </p></td>
-      <td><input class="gj-input" name="gj_social_facebook_app_id" value="<?php echo $settings && property_exists($settings->facebook, 'app_id') && $settings->facebook->app_id != "" ? $settings->facebook->app_id : ''; ?>"></td>
-    </tr>
-    <tr>
-      <td><p>App Secret: </p></td>
-      <td><input class="gj-input" name="gj_social_facebook_app_secret" value="<?php echo $settings && property_exists($settings->facebook, 'app_secret') && $settings->facebook->app_secret != "" ? $settings->facebook->app_secret : ''; ?>"></td>
-    </tr>
-    <tr>
-      <td><p>Long-Lived User Access Token: </p></td>
+      <td><p>Token: </p></td>
       <td><input class="gj-input" name="gj_social_facebook_token" value="<?php echo $settings && $settings->facebook->token != "" ? $settings->facebook->token : ''; ?>"></td>
     </tr>
     <tr>
